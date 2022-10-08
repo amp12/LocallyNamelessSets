@@ -1,0 +1,4 @@
+name: agda
+depend: 
+include: .
+flags: --with-K 
