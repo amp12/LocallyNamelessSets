@@ -5,4 +5,4 @@ Agda (version 2.6.2.2) was used to develop the theory of locally nameless sets a
 
 The Agda code is stand-alone: some standard definitions (that might otherwise be called from Agda's Standard Library) are collected in the file Prelude.agda. The last part of the development requires function extensionality, which we postulate (file FunExt.agda).
 
-The root file is agda/Everything/agda
+The root file is `agda/Everything.agda`
