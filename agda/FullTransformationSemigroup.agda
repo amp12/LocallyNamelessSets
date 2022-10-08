@@ -920,6 +920,6 @@ module _ (S : Set){{_  : Unfinite S}} where
         ρ a b (σ a b x)
       qed
 
-{- Composing fsRenset→TS with lns→fsRenset, we get a proof of
- Proposition 3.8 from Proposition 3.7 (which is not formalized
- here). -}
+{- Composing fsRenset→TS with lns→fsRenset, we get a proof of the
+ existence part of Proposition 3.8 from Proposition 3.7 (which is not
+ formalized here). -}
