@@ -172,6 +172,15 @@ symm :
   y ≡ x
 symm refl = refl
 
+symm¬≡ :
+  {l : Level}
+  {A : Set l}
+  {x y : A}
+  (p : ¬ x ≡ y)
+  → -----------
+  ¬ y ≡ x
+symm¬≡ p refl = p refl
+
 infix  1 proof_
 proof_ :
   {l : Level}
@@ -222,6 +231,16 @@ subst :
   → -------------
   B x → B x'
 subst B refl x = x
+
+uip :
+  {l : Level}
+  {A : Set l}
+  {x x' : A}
+  {p : x ≡ x'}
+  {p' : x ≡ x'}
+  → -----------
+  p ≡ p'
+uip {p = refl} {refl} = refl
 
 ----------------------------------------------------------------------
 -- Injective functions

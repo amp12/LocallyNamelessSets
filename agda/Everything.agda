@@ -14,7 +14,10 @@ module Everything where
 -- Some preliminary definitions and lemmas
 open import Prelude
 
--- "Unfinite" sets [Section 2.1]
+-- Postulated functional extensionalty
+open import FunExt
+
+-- Section 2.1
 open import Unfinite
 
 -- Section 2.2
@@ -46,6 +49,5 @@ open import FullTransformationSemigroup
 open import Shift
 
 -- Section 4
-open import FunExt -- postulated functional extensionalty
 open import BindingSignature
 open import LambdaTerms

@@ -31,19 +31,18 @@ A atom-supports x = ∀ a → a ∉ A → a # x
 ----------------------------------------------------------------------
 -- Locally nameless set of indices and atoms [Example 2.10]
 ----------------------------------------------------------------------
-instance
-  lnsℕ𝔸 : lns ℕ𝔸
-  ocSet {{lnsℕ𝔸}} = ocℕ𝔸
-  asupp {{lnsℕ𝔸}} (ι₁ i) = Иi Ø λ _ → refl
-  asupp {{lnsℕ𝔸}} (ι₂ a) = Иi [ a ] и₂
-    where
-    и₂ : (b : 𝔸){{_ : b ∉ [ a ]}} → b # ι₂ a
-    и₂ b {{∉[]{{p}}}} rewrite p = refl
-  isupp {{lnsℕ𝔸}} (ι₁ i) = (i +1 , s₂)
-    where
-    s₂ : i +1 ≻ ι₁ i
-    s₂ j {{p}} rewrite +1≤→≠ i j p = (new Ø , refl)
-  isupp {{lnsℕ𝔸}} (ι₂ a) = (0 , λ _ → (a , refl))
+lnsℕ𝔸 : lns ℕ𝔸
+ocSet {{lnsℕ𝔸}} = ocℕ𝔸
+asupp {{lnsℕ𝔸}} (ι₁ i) = Иi Ø λ _ → refl
+asupp {{lnsℕ𝔸}} (ι₂ a) = Иi [ a ] и₂
+  where
+  и₂ : (b : 𝔸){{_ : b ∉ [ a ]}} → b # ι₂ a
+  и₂ b {{∉[]{{p}}}} rewrite p = refl
+isupp {{lnsℕ𝔸}} (ι₁ i) = (i +1 , s₂)
+  where
+  s₂ : i +1 ≻ ι₁ i
+  s₂ j {{p}} rewrite +1≤→≠ i j p = (new Ø , refl)
+isupp {{lnsℕ𝔸}} (ι₂ a) = (0 , λ _ → (a , refl))
 
 ----------------------------------------------------------------------
 -- Properties of open/close operations wrt freshness [Lemma 2.12]
@@ -82,7 +81,7 @@ module _
 
 #<~ :
   {X : Set}
-  {{_ : lns X}}
+  {{_ : oc X}}
   (i : ℕ)
   (a b : 𝔸)
   (x : X)
@@ -102,7 +101,7 @@ module _
 
 #~> :
   {X : Set}
-  {{_ : lns X}}
+  {{_ : oc X}}
   (i : ℕ)
   (a b : 𝔸)
   (x : X)
@@ -118,7 +117,6 @@ module _
    ≡[ ap (i ~> b) (#2 it) ]
      (i ~> b)x
    qed)
-
 
 ----------------------------------------------------------------------
 -- Properties of open/close operations wrt local closure [Lemma 2.13]

@@ -16,8 +16,8 @@ open import Category
 oc↑ : {X : Set}{{_ : oc X}} → oc X
 lns↑ : {X : Set}{{_ : lns X}} → lns X
 
-_~>_ {{oc↑}} i a x           = (i +1 ~> a)x
-_<~_ {{oc↑}} i a x           = (i +1 <~ a)x
+_~>_ {{oc↑}} i a x           = (i +1 ~> a)x -- Equation (56)
+_<~_ {{oc↑}} i a x           = (i +1 <~ a)x -- Equation (56)
 oc₁  {{oc↑}} i a b x         = oc₁ (i +1) a b x
 oc₂  {{oc↑}} i j a x         = oc₂ (i +1) (j +1) a x
 oc₃  {{oc↑}} i a x           = oc₃ (i +1) a x
@@ -45,7 +45,7 @@ isupp {{lns↑}} x with (i , p) ← isupp x = (pred i , f)
   f j {{q}} = p (j +1) {{≤trans (pred+1≤ i) (+1≤ q)}}
 
 ----------------------------------------------------------------------
--- Iterated shift [Equations (69)]
+-- Iterated shift [Equations (60)]
 ----------------------------------------------------------------------
 oc⇑ : {n : ℕ}{X : Set}{{_ : oc X}} → oc X
 oc⇑ {0}    {{p}} = p

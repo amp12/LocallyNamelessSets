@@ -1,6 +1,7 @@
 module FullTransformationSemigroup where
 
 open import Prelude
+open import FunExt
 open import Unfinite
 open import oc-Sets
 open import Freshness
@@ -9,6 +10,7 @@ open import Support
 open import AbstractionConcretion
 open import RenamingRendexingSwapping
 open import Category
+open import fsRenset
 
 -- Given an unfinite set S
 module _ (S : Set){{_  : Unfinite S}} where
@@ -18,8 +20,11 @@ module _ (S : Set){{_  : Unfinite S}} where
   record TS (X : Set) : Set where
     -- Giving an element of TS S X amounts to giving an action of the
     -- full transformation monoid T_S on X
+    constructor mkTS
     field
       τ : S → S → X → X
+      -- N.B. order of the first two arguments of τ is
+      -- reversed compared with the paper
       ε : S → S → X → X
       TS₁ :
         (a : S)
@@ -67,8 +72,8 @@ module _ (S : Set){{_  : Unfinite S}} where
         (a b c d : S)
         (x : X)
         {{_ : b ≠ c}}
-        {{_ : c ≠ a}}
-        {{_ : a ≠ d}}
+        {{_ : a ≠ c}}
+        {{_ : d ≠ a}}
         → -------------------------------
         ε b a (ε d c x) ≡ ε d c (ε b a x)
       TS₉ :
@@ -108,130 +113,129 @@ module _ (S : Set){{_  : Unfinite S}} where
 
   open TS{{...}} public
 
-  --------------------------------------------------------------------
-  -- Popescu's finitely supported rensets
-  --------------------------------------------------------------------
-  record Renset (X : Set) : Set where
-    field
-      ρ : S → S → X → X
-      RN₁ :
-        (a : S)
-        (x : X)
-        → ---------
-        ρ a a x ≡ x
-      RN₂ :
-        (a b c : S)
-        (x : X)
-        {{_ : a ≠ c}}
-        → -----------------------
-        ρ b a (ρ c a x) ≡ ρ c a x
-      RN₃ :
-        (a b c : S)
-        (x : X)
-        → -------------------------------
-        ρ c b (ρ b a x) ≡ ρ c a (ρ c b x)
-      RN₄ :
-        (a b c d : S)
-        (x : X)
-        {{_ : b ≠ c}}
-        {{_ : c ≠ a}}
-        {{_ : a ≠ d}}
-        → -------------------------------
-        ρ b a (ρ d c x) ≡ ρ d c (ρ b a x)
-
-  open Renset{{...}} public
-
-  --------------------------------------------------------------------
-  -- Renset freshness relation
-  --------------------------------------------------------------------
-  infix 4 _♯_
-  _♯_ : {X : Set}{{_ : Renset X}} → S → X → Set
-  a ♯ x = И b ∶ S , ρ b a x ≡ x
-
-  ♯≡ :
+  -- Extensionality for elements of TS X
+  TSext :
     {X : Set}
-    {{_ : Renset X}}
-    (x : X)
-    (a b : S)
-    {{_ : a ♯ x}}
-    → -----------
-    ρ b a x ≡ x
-  ♯≡ x a b {{Иi и₁ и₂}} =
-    let
-      as = [ a ] ∪ и₁
-      c = new as
-      e : ρ c a x ≡ x
-      e = и₂ c {{∉∪₂ (unfinite as)}}
-      instance
-        _ : a ≠ c
-        _ = symm≠ c a (∉[]₁ (∉∪₁ (unfinite as)))
-    in
-    proof
-      ρ b a x
-    ≡[ ap (ρ b a) (symm e) ]
-      ρ b a (ρ c a x)
-    ≡[ RN₂ _ _ _ _ ]
-      ρ c a x
-    ≡[ e ]
-      x
-    qed
-
-  ♯ρ :
-    {X : Set}
-    {{_ : Renset X}}
-    (x : X)
-    (a b c : S)
-    {{_ : c ♯ x}}
-    {{_ : c ≠ b}}
-    → -----------
-    c ♯ ρ b a x
-  ♯ρ x a b c with b ≐ a
-  ... | equ rewrite RN₁ a x = it
-  ... | neq f = Иi [ a ] и₂
+    (ts ts' : TS X)
+    (_ : ∀ a b x → τ {{ts}} a b x ≡ τ {{ts'}} a b x)
+    (_ : ∀ a b x → ε {{ts}} a b x ≡ ε {{ts'}} a b x)
+    → ----------------------------------------------
+    ts ≡ ts'
+  TSext ts ts' p p'
+    with refl ← (funext λ a → funext λ b → funext (p a b))
+    | refl ← (funext λ a → funext λ b → funext (p' a b)) = e
     where
-    и₂ :
-      (d : S)
-      {{_ : d ∉ [ a ]}}
-      → -----------------------
-      ρ d c (ρ b a x) ≡ ρ b a x
-    и₂ d {{∉[]}} with a ≐ c
-    ... | equ = RN₂ _ _ _ _
-    ... | neq g =
-      let
-        instance
-          _ : a ≠ c
-          _ = ¬≡→≠ g
-      in
-      proof
-        ρ d c (ρ b a x)
-      ≡[ RN₄ _ _ _ _ _ ]
-        ρ b a (ρ d c x)
-      ≡[ ap (ρ b a) (♯≡ x c d) ]
-        ρ b a x
-      qed
-
-  ♯ρ' :
-    {X : Set}
-    {{_ : Renset X}}
-    (x : X)
-    (a b : S)
-    {{_ : a ≠ b}}
-    → -----------
-    a ♯ ρ b a x
-  ♯ρ' x a b = Иi Ø λ _ → RN₂ _ _ _ _
+    TS₁eq : TS₁ {{ts}} ≡ TS₁ {{ts'}}
+    TS₁eq =
+      funext λ _ →
+      funext λ _ → uip
+    TS₂eq : TS₂ {{ts}} ≡ TS₂ {{ts'}}
+    TS₂eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ → uip
+    TS₃eq : TS₃ {{ts}} ≡ TS₃ {{ts'}}
+    TS₃eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ → uip
+    TS₄eq : TS₄ {{ts}} ≡ TS₄ {{ts'}}
+    TS₄eq  =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ → uip
+    TS₅eq : TS₅ {{ts}} ≡ TS₅ {{ts'}}
+    TS₅eq =
+      funext λ _ →
+      funext λ _ → uip
+    TS₆eq : TS₆ {{ts}} ≡ TS₆ {{ts'}}
+    TS₆eq  =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ → uip
+    TS₇eq : TS₇ {{ts}} ≡ TS₇ {{ts'}}
+    TS₇eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ → uip
+    TS₈eq : TS₈ {{ts}} ≡ TS₈ {{ts'}}
+    TS₈eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ → uip
+    TS₉eq : TS₉ {{ts}} ≡ TS₉ {{ts'}}
+    TS₉eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ → uip
+    TS₁₀eq : TS₁₀ {{ts}} ≡ TS₁₀ {{ts'}}
+    TS₁₀eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ → uip
+    TS₁₁eq : TS₁₁ {{ts}} ≡ TS₁₁ {{ts'}}
+    TS₁₁eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ → uip
+    TS₁₂eq : TS₁₂ {{ts}} ≡ TS₁₂ {{ts'}}
+    TS₁₂eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      funext λ _ →
+      instance-funext λ _ →
+      instance-funext λ _ → uip
+    TS₁₃eq : TS₁₃ {{ts}} ≡ TS₁₃ {{ts'}}
+    TS₁₃eq =
+      funext λ _ →
+      funext λ _ →
+      funext λ _ → uip
+    e : ts ≡ ts'
+    e with refl ← TS₁eq
+      | refl ← TS₂eq
+      | refl ← TS₃eq
+      | refl ← TS₄eq
+      | refl ← TS₅eq
+      | refl ← TS₆eq
+      | refl ← TS₇eq
+      | refl ← TS₈eq
+      | refl ← TS₉eq
+      | refl ← TS₁₀eq
+      | refl ← TS₁₁eq
+      | refl ← TS₁₂eq
+      | refl ← TS₁₃eq = refl
 
   --------------------------------------------------------------------
-  -- Finitely supported rensets
-  --------------------------------------------------------------------
-  record fsRenset (X : Set) : Set where
-    field
-      {{renset}} : Renset X
-      rsupp : (x : X) → И a ∶ S , a ♯ x
-
-  open fsRenset{{...}}public
-
-  --------------------------------------------------------------------
-  -- Name swapping operation
+  -- Name swapping operation for a finitely supported renset
   --------------------------------------------------------------------
   module _ {X : Set}{{_ : fsRenset X}} where
     σ : S → S → X → X
@@ -258,6 +262,8 @@ module _ (S : Set){{_  : Unfinite S}} where
         instance
           _ : d ≠ c
           _ = ¬≡→≠  f
+          _ : a ≠ c
+          _ = symm≠ c a it
           _ : b ≠ c
           _ = symm≠ c b it
       in
@@ -920,6 +926,125 @@ module _ (S : Set){{_  : Unfinite S}} where
         ρ a b (σ a b x)
       qed
 
-{- Composing fsRenset→TS with lns→fsRenset, we get a proof of the
- existence part of Proposition 3.8 from Proposition 3.7 (which is not
- formalized here). -}
+----------------------------------------------------------------------
+-- From Proposition 3.7 (which is not formalized here) composing
+-- fsRenset→TS with lns→fsRenset, we get a proof of the existence part
+-- of Proposition 3.8:
+----------------------------------------------------------------------
+lns→TS : (X : Set){{_ : lns X}} → TS ℕ𝔸 X
+lns→TS X = fsRenset→TS ℕ𝔸 {X}{{lns→fsRenset}}
+
+----------------------------------------------------------------------
+-- Uniqueness part of Proposition 3.8
+----------------------------------------------------------------------
+lns→TSunique :
+  (X : Set)
+  {{_ : lns X}}
+  (ts : TS ℕ𝔸 X)
+  (_ : ∀ i a x →
+    ε{{_}}{{ts}} (ι₂ a) (ι₁ i) x ≡ (i ~> a)x) -- Equation (50)
+  (_ : ∀ i a x →
+    ε{{_}}{{ts}} (ι₁ i) (ι₂ a) x ≡ (i <~ a)x) -- Equation (50)
+  → -----------------------------------------
+  ts ≡ lns→TS X
+lns→TSunique X ts p q = TSext ℕ𝔸 ts (lns→TS X) f g
+  where
+  τ₁ = τ{{_}}{{ts}}
+  ε₁ = ε{{_}}{{ts}}
+  τ₂ = τ{{_}}{{lns→TS X}}
+  ε₂ = ε{{_}}{{lns→TS X}}
+
+  g : ∀ a b x → ε₁ a b x ≡ ε₂ a b x
+  g (ι₁ i) (ι₂ b) x = q i b x
+  g (ι₂ a) (ι₁ j) x = p j a x
+  g (ι₂ a) (ι₂ b) x =
+    let
+      i = π₁ (isupp x)
+      i≻x : i ≻ x
+      i≻x = π₂ (isupp x)
+    in
+    proof
+      ε₁ (ι₂ a) (ι₂ b) x
+    ≡[ ap (ε₁ (ι₂ a) (ι₂ b)) (symm (≻3 i≻x ≤refl)) ]
+      ε₁ (ι₂ a) (ι₂ b) ((i ~> a)x)
+    ≡[ ap (ε₁ (ι₂ a) (ι₂ b)) (symm (p i a _)) ]
+      ε₁ (ι₂ a) (ι₂ b) ((ε₁ (ι₂ a) (ι₁ i) x))
+    ≡[ symm (TS₇{{_}}{{ts}} (ι₂ b) (ι₁ i) (ι₂ a) _ ) ]
+      ε₁ (ι₂ a) (ι₁ i) (ε₁ (ι₁ i) (ι₂ b) x)
+    ≡[ p i a _ ]
+      (i ~> a)(ε₁ (ι₁ i) (ι₂ b) x)
+    ≡[ ap (i ~> a) (q i b _) ]
+      (i ~> a)((i <~ b)x)
+    ≡[]
+      (a ↤ b) x
+    qed
+  g (ι₁ i) (ι₁ j) x =
+    let
+      as = Иe₁ (asupp x)
+      a  = new as
+      instance
+        _ : a # x
+        _ = Иe₂ (asupp x) a {{unfinite as}}
+    in
+    proof
+      ε₁ (ι₁ i) (ι₁ j) x
+    ≡[ ap (ε₁ (ι₁ i) (ι₁ j)) (symm (#2 it)) ]
+      ε₁ (ι₁ i) (ι₁ j) ((i <~ a)x)
+    ≡[ ap (ε₁ (ι₁ i) (ι₁ j)) (symm (q i a _)) ]
+      ε₁ (ι₁ i) (ι₁ j) (ε₁ (ι₁ i) (ι₂ a) x)
+    ≡[ symm (TS₇{{_}}{{ts}} (ι₁ j) (ι₂ a) (ι₁ i) _ ) ]
+      ε₁ (ι₁ i) (ι₂ a) (ε₁ (ι₂ a) (ι₁ j) x)
+    ≡[ q i a _ ]
+      (i <~ a)(ε₁ (ι₂ a) (ι₁ j) x)
+    ≡[ ap (i <~ a) (p j a _) ]
+      (i <~ a)((j ~> a)x)
+    ≡[]
+      (j ↦ i)x
+    qed
+
+  instance
+    _ : fsRenset {ℕ𝔸} X
+    _ = lns→fsRenset
+    _ : Renset{ℕ𝔸} X
+    _ = renset
+
+  f : ∀ a b x →  τ₁ a b x ≡ τ₂ a b x
+  f a b x =
+    let
+      cs = [ a ] ∪ [ b ] ∪ Иe₁ (rsupp x) ∪ Иe₁ (rsupp (τ₁ a b x))
+      c  = new cs
+      instance
+        _ : c ♯ x
+        _ = Иe₂ (rsupp x) c {{∉∪₁ (∉∪₂ (∉∪₂ (unfinite cs)))}}
+        _ : c ≠ a
+        _ = ∉[]₁ (∉∪₁ (unfinite cs))
+        _ : c ≠ b
+        _ = ∉[]₁ (∉∪₁ (∉∪₂ (unfinite cs)))
+        _ : b ≠ c
+        _ = symm≠ c b it
+        _ : c ♯ τ₁ a b x
+        _ = Иe₂ (rsupp (τ₁ a b x)) c {{∉∪₂ (∉∪₂ (∉∪₂ (unfinite cs)))}}
+    in
+    proof
+      τ₁ a b x
+    ≡[ symm (♯≡ _ c b) ]
+      ε₂ b c (τ₁ a b x)
+    ≡[ symm (g b c _) ]
+      ε₁ b c (τ₁ a b x)
+    ≡[ symm (TS₅{{_}}{{ts}} b _) ]
+      ε₁ b b (ε₁ b c (τ₁ a b x))
+    ≡[ symm (TS₇{{_}}{{ts}} b c b _) ]
+      ε₁ b c (ε₁ c b (τ₁ a b x))
+    ≡[ ap (ε₁ b c) (TS₉{{_}}{{ts}} a b c x) ]
+      ε₁ b c (ε₁ a b (ε₁ c a x))
+    ≡[ g b c _ ]
+      ε₂ b c (ε₁ a b (ε₁ c a x))
+    ≡[ ap (ε₂ b c) (g a b _) ]
+      ε₂ b c (ε₂ a b (ε₁ c a x))
+    ≡[ ap (ε₂ b c ∘ ε₂ a b) (g c a _) ]
+      ε₂ b c (ε₂ a b (ε₂ c a x))
+    ≡[ symm (σfresh ℕ𝔸 a b c x) ]
+      σ ℕ𝔸 a b x
+    ≡[]
+      τ₂ a b x
+    qed

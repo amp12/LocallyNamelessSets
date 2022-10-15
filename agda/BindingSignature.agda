@@ -28,7 +28,7 @@ open Sig public
 ----------------------------------------------------------------------
 infixr 8 _∙_ _∙′_
 _∙_ : Sig → Set → Set
-Σ ∙ X  = ∑ c ∶ Op Σ , (Fin (length (ar Σ c)) → X)
+Σ ∙ X  = ∑ c ∶ Op Σ , (Fin (length (ar Σ c)) → X) -- Equation (58)
 
 _∙′_ : (Σ : Sig){X Y : Set} → (X → Y) → Σ ∙ X → Σ ∙ Y
 (Σ ∙′ f) (c , t) = (c , (f ∘ t))
@@ -134,7 +134,7 @@ instance
   ochom {{lns∙′}} = oc∙′
 
 ----------------------------------------------------------------------
--- Terms over a binding signature [Equation (74)]
+-- Terms over a binding signature [Equation (65)]
 ----------------------------------------------------------------------
 data Trm (Σ : Sig) : Set where
   var : ℕ𝔸 → Trm Σ
@@ -307,22 +307,24 @@ instance
     qed
 
 -- The finite support properties
-instance
-  lnsTrm : {Σ : Sig} → lns (Trm Σ)
-  lnsTrm {Σ} = mklns asp isp
-    where
-    asp : (t : Trm Σ) → И a ∶ 𝔸 , a # t
-    asp (var v) with Иi и₁ и₂ ← asupp v =
-      Иi и₁ (λ a → ap var (и₂ a))
-    asp (op(c , ts)) = Иi
-      (⋃ λ k →  Иe₁ (asp (ts k)))
-      (λ a → #Trm c ts a λ k → Иe₂ (asp (ts k)) a {{∉⋃ _ k}})
-    isp : (t : Trm Σ) → ∑ i ∶ ℕ , i ≻ t
-    isp (var v) with (i , p) ← isupp v =
-      (i , λ j → (π₁ (p j)) , ap var (π₂ (p j)))
-    isp (op(c , ts)) =
-      let i = Max λ k →  π₁ (isp (ts k)) in
-      (i ,  ≻Trm c ts i λ k → ≻1 (≤+ _ (≤Max _ k)) (π₂ (isp (ts k))) )
+lnsTrm : {Σ : Sig} → lns (Trm Σ)
+lnsTrm {Σ} = mklns asp isp
+  where
+  instance
+    _ : lns ℕ𝔸
+    _ = lnsℕ𝔸
+  asp : (t : Trm Σ) → И a ∶ 𝔸 , a # t
+  asp (var v) with Иi и₁ и₂ ← asupp v =
+    Иi и₁ (λ a → ap var (и₂ a))
+  asp (op(c , ts)) = Иi
+    (⋃ λ k →  Иe₁ (asp (ts k)))
+    (λ a → #Trm c ts a λ k → Иe₂ (asp (ts k)) a {{∉⋃ _ k}})
+  isp : (t : Trm Σ) → ∑ i ∶ ℕ , i ≻ t
+  isp (var v) with (i , p) ← isupp v =
+    (i , λ j → (π₁ (p j)) , ap var (π₂ (p j)))
+  isp (op(c , ts)) =
+    let i = Max λ k →  π₁ (isp (ts k)) in
+    (i ,  ≻Trm c ts i λ k → ≻1 (≤+ _ (≤Max _ k)) (π₂ (isp (ts k))) )
 
 ----------------------------------------------------------------------
 -- The locally nameless set Trm Σ is the free Σ∙_-algebra on ℕ𝔸
@@ -336,11 +338,16 @@ module UniversalProperty
   (f : ℕ𝔸 → X)
   (g : Σ ∙ X → X)
   where
+  instance
+    _ : lns ℕ𝔸
+    _ = lnsℕ𝔸
+    _ : lns (Trm Σ)
+    _ = lnsTrm
   -- Existence
   rec : Trm Σ → X
   rec (var v)      = f v
   rec (op(c , ts)) = g (c , λ k → rec (ts k))
-  -- Uniqueness [Equation (70)]
+  -- Uniqueness [Equation (61)]
   module _
     (h : Trm Σ → X)
     (hvar : ∀ v → h (var v) ≡ f v)
@@ -411,7 +418,7 @@ module UniversalProperty
 ----------------------------------------------------------------------
 -- Freshness in Trm Σ versus free variables [Proposition 4.2]
 ----------------------------------------------------------------------
-fv : {Σ : Sig} → Trm Σ → Fset 𝔸
+fv : {Σ : Sig} → Trm Σ → Fset 𝔸 -- Equation (66)
 fv (bvar i)  = Ø
 fv (fvar a)  = [ a ]
 fv (op(c , ts)) = ⋃ λ k → fv (ts k)
