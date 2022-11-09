@@ -4,7 +4,7 @@
 <a id="26" class="Comment">{-
    An Agda developement for some of the material in the paper:
 
-   Andrew M. Pitts, LOCALLY NAMELESS SETS
+   Andrew M. Pitts, &quot;Locally Nameless Sets&quot;, POPL 2023
 
    Checked with Agda v2.6.2.2
 
@@ -12,43 +12,43 @@
    Creative Commons License CC-BY
 -}</a>
 
-<a id="230" class="Comment">-- Some preliminary definitions and lemmas</a>
-<a id="273" class="Keyword">open</a> <a id="278" class="Keyword">import</a> <a id="285" href="Prelude.html" class="Module">Prelude</a>
+<a id="243" class="Comment">-- Some preliminary definitions and lemmas</a>
+<a id="286" class="Keyword">open</a> <a id="291" class="Keyword">import</a> <a id="298" href="Prelude.html" class="Module">Prelude</a>
 
-<a id="294" class="Comment">-- Postulated functional extensionalty</a>
-<a id="333" class="Keyword">open</a> <a id="338" class="Keyword">import</a> <a id="345" href="FunExt.html" class="Module">FunExt</a>
+<a id="307" class="Comment">-- Postulated functional extensionalty</a>
+<a id="346" class="Keyword">open</a> <a id="351" class="Keyword">import</a> <a id="358" href="FunExt.html" class="Module">FunExt</a>
 
-<a id="353" class="Comment">-- Section 2.1</a>
-<a id="368" class="Keyword">open</a> <a id="373" class="Keyword">import</a> <a id="380" href="Unfinite.html" class="Module">Unfinite</a>
+<a id="366" class="Comment">-- Section 2.1</a>
+<a id="381" class="Keyword">open</a> <a id="386" class="Keyword">import</a> <a id="393" href="Unfinite.html" class="Module">Unfinite</a>
 
-<a id="390" class="Comment">-- Section 2.2</a>
-<a id="405" class="Keyword">open</a> <a id="410" class="Keyword">import</a> <a id="417" href="oc-Sets.html" class="Module">oc-Sets</a>
+<a id="403" class="Comment">-- Section 2.2</a>
+<a id="418" class="Keyword">open</a> <a id="423" class="Keyword">import</a> <a id="430" href="oc-Sets.html" class="Module">oc-Sets</a>
 
-<a id="426" class="Comment">-- Section 2.3</a>
-<a id="441" class="Keyword">open</a> <a id="446" class="Keyword">import</a> <a id="453" href="Freshness.html" class="Module">Freshness</a>
+<a id="439" class="Comment">-- Section 2.3</a>
+<a id="454" class="Keyword">open</a> <a id="459" class="Keyword">import</a> <a id="466" href="Freshness.html" class="Module">Freshness</a>
 
-<a id="464" class="Comment">-- section 2.4</a>
-<a id="479" class="Keyword">open</a> <a id="484" class="Keyword">import</a> <a id="491" href="LocalClosedness.html" class="Module">LocalClosedness</a>
+<a id="477" class="Comment">-- section 2.4</a>
+<a id="492" class="Keyword">open</a> <a id="497" class="Keyword">import</a> <a id="504" href="LocalClosedness.html" class="Module">LocalClosedness</a>
 
-<a id="508" class="Comment">-- Section 2.5</a>
-<a id="523" class="Keyword">open</a> <a id="528" class="Keyword">import</a> <a id="535" href="Support.html" class="Module">Support</a>
+<a id="521" class="Comment">-- Section 2.5</a>
+<a id="536" class="Keyword">open</a> <a id="541" class="Keyword">import</a> <a id="548" href="Support.html" class="Module">Support</a>
 
-<a id="544" class="Comment">-- Section2.6</a>
-<a id="558" class="Keyword">open</a> <a id="563" class="Keyword">import</a> <a id="570" href="AbstractionConcretion.html" class="Module">AbstractionConcretion</a>
+<a id="557" class="Comment">-- Section2.6</a>
+<a id="571" class="Keyword">open</a> <a id="576" class="Keyword">import</a> <a id="583" href="AbstractionConcretion.html" class="Module">AbstractionConcretion</a>
 
-<a id="593" class="Comment">-- Section 2.7</a>
-<a id="608" class="Keyword">open</a> <a id="613" class="Keyword">import</a> <a id="620" href="RenamingRendexingSwapping.html" class="Module">RenamingRendexingSwapping</a>
+<a id="606" class="Comment">-- Section 2.7</a>
+<a id="621" class="Keyword">open</a> <a id="626" class="Keyword">import</a> <a id="633" href="RenamingReindexingSwapping.html" class="Module">RenamingReindexingSwapping</a>
 
-<a id="647" class="Comment">-- Section 3.1</a>
-<a id="662" class="Keyword">open</a> <a id="667" class="Keyword">import</a> <a id="674" href="Category.html" class="Module">Category</a>
+<a id="661" class="Comment">-- Section 3.1</a>
+<a id="676" class="Keyword">open</a> <a id="681" class="Keyword">import</a> <a id="688" href="Category.html" class="Module">Category</a>
 
-<a id="684" class="Comment">-- Sections 3.2 and 3.3</a>
-<a id="708" class="Keyword">open</a> <a id="713" class="Keyword">import</a> <a id="720" href="fsRenset.html" class="Module">fsRenset</a>
-<a id="729" class="Keyword">open</a> <a id="734" class="Keyword">import</a> <a id="741" href="FullTransformationSemigroup.html" class="Module">FullTransformationSemigroup</a>
+<a id="698" class="Comment">-- Sections 3.2 and 3.3</a>
+<a id="722" class="Keyword">open</a> <a id="727" class="Keyword">import</a> <a id="734" href="fsRenset.html" class="Module">fsRenset</a>
+<a id="743" class="Keyword">open</a> <a id="748" class="Keyword">import</a> <a id="755" href="FullTransformationSemigroup.html" class="Module">FullTransformationSemigroup</a>
 
-<a id="770" class="Comment">-- Section 3.4</a>
-<a id="785" class="Keyword">open</a> <a id="790" class="Keyword">import</a> <a id="797" href="Shift.html" class="Module">Shift</a>
+<a id="784" class="Comment">-- Section 3.4</a>
+<a id="799" class="Keyword">open</a> <a id="804" class="Keyword">import</a> <a id="811" href="Shift.html" class="Module">Shift</a>
 
-<a id="804" class="Comment">-- Section 4</a>
-<a id="817" class="Keyword">open</a> <a id="822" class="Keyword">import</a> <a id="829" href="BindingSignature.html" class="Module">BindingSignature</a>
+<a id="818" class="Comment">-- Section 4</a>
+<a id="831" class="Keyword">open</a> <a id="836" class="Keyword">import</a> <a id="843" href="BindingSignature.html" class="Module">BindingSignature</a>
 </pre></body></html>
